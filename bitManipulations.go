@@ -41,3 +41,21 @@ func getLeastSignificantBitIndex(b uint64) uint64 {
 	}
 
 }
+
+// generate pseudo random 32 bit number
+var currentRandom = uint32(1804289383)
+
+func getRandomNumber() uint32 {
+	// this number comes from Chess Programming's YouTube video
+	number := currentRandom
+
+	// XOR shift 32
+	number ^= number << 13
+	number ^= number >> 17
+	number ^= number << 5
+
+	// update current random
+	currentRandom = number
+
+	return number
+}

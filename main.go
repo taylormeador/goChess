@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 )
 
 // prints uint64 as bitboard
@@ -41,12 +43,9 @@ func printBitboard(b uint64) {
 func main() {
 	//bitboard := uint64(0)
 
-	for r := uint64(0); r < 8; r++ {
-		for f := uint64(0); f < 8; f++ {
-			square := r*8 + f
-			bitCount := countBits(maskRookAttacks(square))
-			fmt.Printf(" %d,", bitCount)
-		}
-		fmt.Println()
+	reader := bufio.NewReader(os.Stdin)
+	for {
+		fmt.Println(getRandomNumber())
+		reader.ReadString('\n')
 	}
 }
