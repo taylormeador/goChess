@@ -33,11 +33,27 @@ func printBitboard(b uint64) {
 
 // init
 func initAll() {
-	//initMagicNumbers()
+	initLeapersAttacks()
+	initSliderAttacks(bishop)
+	initSliderAttacks(rook)
 }
 
 // main
 func main() {
-	//bitboard := uint64(0)
 	initAll()
+
+	// define test bitboard
+	occupancy := uint64(0)
+	occupancy |= setBit(occupancy, c5)
+	occupancy |= setBit(occupancy, f2)
+	occupancy |= setBit(occupancy, g7)
+	occupancy |= setBit(occupancy, b2)
+	occupancy |= setBit(occupancy, g5)
+	occupancy |= setBit(occupancy, e2)
+	occupancy |= setBit(occupancy, e7)
+
+	// print
+	printBitboard(occupancy)
+	printBitboard(getBishopAttacks(d4, occupancy))
+	printBitboard(getRookAttacks(e5, occupancy))
 }

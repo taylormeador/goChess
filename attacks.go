@@ -1,10 +1,18 @@
 package main
 
+// attacks
+var bishopAttacks [64][512]uint64
+var rookAttacks [64][4096]uint64
+var pawnAttacks [2][64]uint64
+var knightAttacks [64]uint64
+var kingAttacks [64]uint64
+
+// masks for generating sliding piece moves
+var rookMasks [64]uint64
+var bishopMasks [64]uint64
+
 // loop through all the squares on the board generating attacks for pawns, knights, and kings on those squares
 func initLeapersAttacks() {
-	var pawnAttacks [2][64]uint64
-	var knightAttacks [64]uint64
-	var kingAttacks [64]uint64
 	for rank := 0; rank < 8; rank++ {
 		for file := 0; file < 8; file++ {
 			square := uint64(rank*8 + file)
@@ -12,6 +20,56 @@ func initLeapersAttacks() {
 			pawnAttacks[black][square] = maskPawnAttacks(square, black)
 			knightAttacks[square] = maskKnightAttacks(square)
 			kingAttacks[square] = maskKingAttacks(square)
+		}
+	}
+}
+
+// loop through all the squares on the board generating attacks for bishops and rooks
+func initSliderAttacks(piece int) {
+	var attackMask uint64
+
+	// loop over 64 squares and populate arrays with masks
+	for square := uint64(0); square < 64; square++ {
+		// init attack masks
+		bishopMasks[square] = maskBishopAttacks(square)
+		rookMasks[square] = maskRookAttacks(square)
+
+		// init current mask
+		if piece == 1 {
+			// bishop
+			attackMask = bishopMasks[square]
+		} else {
+			// rook
+			attackMask = rookMasks[square]
+		}
+
+		// init relevant occupancy bit count
+		relevantBitsCount := countBits(attackMask)
+
+		// init occupancyIndices
+		occupancyIndices := uint64(1) << relevantBitsCount
+
+		// loop over occupancy indices
+		for i := uint64(0); i < occupancyIndices; i++ {
+			if piece == 1 {
+				// bishop current occupancy
+				occupancy := setOccupancy(i, relevantBitsCount, attackMask)
+
+				// magic index
+				magicIndex := (occupancy * bishopMagicNumbers[square]) >> (64 - bishopRelevantBits[square])
+
+				// init current bishop attacks
+				bishopAttacks[square][magicIndex] = bishopAttacksOnTheFly(square, occupancy)
+			} else {
+				// rook current occupancy
+				occupancy := setOccupancy(i, relevantBitsCount, attackMask)
+
+				// magic index
+				magicIndex := (occupancy * rookMagicNumbers[square]) >> (64 - rookRelevantBits[square])
+
+				// init current bishop attacks
+				rookAttacks[square][magicIndex] = rookAttacksOnTheFly(square, occupancy)
+			}
 		}
 	}
 }
@@ -158,6 +216,17 @@ func bishopAttacksOnTheFly(square uint64, blockers uint64) uint64 {
 	return attacks
 }
 
+// get bishop attacks
+func getBishopAttacks(square uint64, occupancy uint64) uint64 {
+	// current board occupancy
+	occupancy &= bishopMasks[square]
+	occupancy *= bishopMagicNumbers[square]
+	occupancy >>= 64 - bishopRelevantBits[square]
+
+	// return attacks for relevant occupancy
+	return bishopAttacks[square][occupancy]
+}
+
 // generate rook attack mask for a single square for magic bitboard
 func maskRookAttacks(square uint64) uint64 {
 	var attacks uint64
@@ -236,6 +305,17 @@ func rookAttacksOnTheFly(square uint64, blockers uint64) uint64 {
 		}
 	}
 	return attacks
+}
+
+// get rook attacks
+func getRookAttacks(square uint64, occupancy uint64) uint64 {
+	// current board occupancy
+	occupancy &= rookMasks[square]
+	occupancy *= rookMagicNumbers[square]
+	occupancy >>= 64 - rookRelevantBits[square]
+
+	// return attacks for current occupancy
+	return rookAttacks[square][occupancy]
 }
 
 // set relevant occupancy bits
