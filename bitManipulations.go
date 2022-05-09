@@ -45,7 +45,7 @@ func getLeastSignificantBitIndex(b uint64) uint64 {
 // generate pseudo random 32 bit number
 var currentRandom = uint32(1804289383)
 
-func getRandomNumber() uint32 {
+func getRandom32BitNumber() uint32 {
 	// this number comes from Chess Programming's YouTube video
 	number := currentRandom
 
@@ -58,4 +58,20 @@ func getRandomNumber() uint32 {
 	currentRandom = number
 
 	return number
+}
+
+// generate pseudo random 64 bit number
+func getRandom64BitNumber() uint64 {
+	var random64BitNumber uint64
+
+	// get 4 random 32 bit numbers
+	num1 := uint64(getRandom32BitNumber()) & 0xFFFF
+	num2 := uint64(getRandom32BitNumber()) & 0xFFFF
+	num3 := uint64(getRandom32BitNumber()) & 0xFFFF
+	num4 := uint64(getRandom32BitNumber()) & 0xFFFF
+
+	// shift bits
+	random64BitNumber = num1 | (num2 << 16) | (num3 << 32) | (num4 << 48)
+
+	return random64BitNumber
 }

@@ -1,9 +1,7 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 )
 
 // prints uint64 as bitboard
@@ -30,22 +28,16 @@ func printBitboard(b uint64) {
 	fmt.Println()
 	// print files and bitboard integer value
 	fmt.Println("      a  b  c  d  e  f  g  h")
-	fmt.Printf("  Bitboard: %d\n", b)
-	lsbIndex := getLeastSignificantBitIndex(b)
-	lsbAlgebraic := "Out of range"
-	if lsbIndex <= 63 && lsbIndex >= 0 {
-		lsbAlgebraic = algebraic[getLeastSignificantBitIndex(b)]
-	}
-	fmt.Printf("    Index: %d   Coordinate: %s\n\n", lsbIndex, lsbAlgebraic)
+	fmt.Printf("  Bitboard: %d\n\n", b)
+}
+
+// init
+func initAll() {
+	//initMagicNumbers()
 }
 
 // main
 func main() {
 	//bitboard := uint64(0)
-
-	reader := bufio.NewReader(os.Stdin)
-	for {
-		fmt.Println(getRandomNumber())
-		reader.ReadString('\n')
-	}
+	initAll()
 }

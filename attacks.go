@@ -1,7 +1,7 @@
 package main
 
 // loop through all the squares on the board generating attacks for pawns, knights, and kings on those squares
-func initSliderAttacks() {
+func initLeapersAttacks() {
 	var pawnAttacks [2][64]uint64
 	var knightAttacks [64]uint64
 	var kingAttacks [64]uint64
@@ -235,7 +235,6 @@ func rookAttacksOnTheFly(square uint64, blockers uint64) uint64 {
 			break
 		}
 	}
-	printBitboard(attacks)
 	return attacks
 }
 
