@@ -14,7 +14,7 @@ func findMagicNumber(square uint64, relevantBits uint64, piece int) uint64 {
 	var attacks [4096]uint64
 	var usedAttacks [4096]uint64
 
-	// get attack mask
+	// set attack mask
 	if piece == 1 {
 		// bishop
 		attackMask = maskBishopAttacks(square)
@@ -23,25 +23,25 @@ func findMagicNumber(square uint64, relevantBits uint64, piece int) uint64 {
 		attackMask = maskRookAttacks(square)
 	}
 
-	occupancyIndices := uint64(1) << relevantBits
+	occupancyIndex := uint64(1) << relevantBits
 
-	// loop over occupancy indices
-	for i := uint64(0); i < occupancyIndices; i++ {
+	// loop over occupancy indices and populate arrays
+	for i := uint64(0); i < occupancyIndex; i++ {
+		// populate occupancy indices with occupancy bitboards
 		occupancies[i] = setOccupancy(i, relevantBits, attackMask)
 
 		// init attacks
-		if piece == 0 {
-			// bishop
+		if piece == 1 {
+			// populate attacks array with bishop attacks, consdiering the current occupancy of the board
 			attacks[i] = bishopAttacksOnTheFly(square, occupancies[i])
 		} else {
-			// rook
+			// populate attacks array with rook attacks, consdiering the current occupancy of the board
 			attacks[i] = rookAttacksOnTheFly(square, occupancies[i])
 		}
 	}
 
 	// test magic numbers
 	for randomCount := uint64(0); randomCount < 100000000; randomCount++ {
-
 		// get a magic number
 		magicNumber := generateCandidateMagicNumber()
 
@@ -49,18 +49,19 @@ func findMagicNumber(square uint64, relevantBits uint64, piece int) uint64 {
 		if countBits((attackMask*magicNumber)&0xFF00000000000000) < 6 {
 			continue
 		}
-		// test magic index
+
+		// generate and test magic indices
 		validMagicNumber := true
-		for i, fail := uint64(0), false; !fail && i < occupancyIndices; i++ {
+		for i, fail := uint64(0), false; !fail && i < occupancyIndex; i++ {
 			magicIndex := (occupancies[i] * magicNumber) >> (64 - relevantBits)
 
-			// if the attack is empty at that index
+			// if the attack array is empty at that index
 			if usedAttacks[magicIndex] == 0 {
 				// add the attack
 				usedAttacks[magicIndex] = attacks[i]
-				// otherwise check if the existing attack matches the correct attack
+				// otherwise check if the existing attack matches the candidate attack
 			} else if usedAttacks[magicIndex] != attacks[i] {
-				// magic index does not work
+				// magic index does not work since it is not a perfect hash
 				fail = true
 				validMagicNumber = false
 			}
@@ -69,7 +70,7 @@ func findMagicNumber(square uint64, relevantBits uint64, piece int) uint64 {
 			return magicNumber
 		}
 	}
-	fmt.Println("  Failed to find magic number")
+	fmt.Println("***Failed to find magic number***")
 	return uint64(0)
 }
 

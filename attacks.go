@@ -1,5 +1,9 @@
 package main
 
+//*********************************
+//           globals
+//*********************************
+
 // attacks
 var bishopAttacks [64][512]uint64
 var rookAttacks [64][4096]uint64
@@ -10,6 +14,10 @@ var kingAttacks [64]uint64
 // masks for generating sliding piece moves
 var rookMasks [64]uint64
 var bishopMasks [64]uint64
+
+//*********************************
+//            init
+//*********************************
 
 // loop through all the squares on the board generating attacks for pawns, knights, and kings on those squares
 func initLeapersAttacks() {
@@ -25,7 +33,7 @@ func initLeapersAttacks() {
 }
 
 // loop through all the squares on the board generating attacks for bishops and rooks
-func initSliderAttacks(piece int) {
+func initSlidersAttacks(piece int) {
 	var attackMask uint64
 
 	// loop over 64 squares and populate arrays with masks
@@ -73,6 +81,10 @@ func initSliderAttacks(piece int) {
 		}
 	}
 }
+
+//*********************************
+//            leapers
+//*********************************
 
 // generate pawn attacks for a single square
 func maskPawnAttacks(square uint64, side int) uint64 {
@@ -138,7 +150,11 @@ func maskKingAttacks(square uint64) uint64 {
 	return attacks
 }
 
-// generate bishop attack mask for a single square for magic bitboard
+//*********************************
+//            bishop
+//*********************************
+
+// generate bishop inner attack mask for a single square for magic bitboard
 func maskBishopAttacks(square uint64) uint64 {
 	var attacks uint64
 
@@ -227,7 +243,11 @@ func getBishopAttacks(square uint64, occupancy uint64) uint64 {
 	return bishopAttacks[square][occupancy]
 }
 
-// generate rook attack mask for a single square for magic bitboard
+//*********************************
+//             rook
+//*********************************
+
+// generate rook inner attack mask for a single square for magic bitboard
 func maskRookAttacks(square uint64) uint64 {
 	var attacks uint64
 
@@ -318,14 +338,26 @@ func getRookAttacks(square uint64, occupancy uint64) uint64 {
 	return rookAttacks[square][occupancy]
 }
 
+//*********************************
+//            queen
+//*********************************
+
+// queen moves are just rook + bishop moves
+
+//*********************************
+//              misc
+//*********************************
+
 // set relevant occupancy bits
 func setOccupancy(index uint64, bitsInMask uint64, attackMask uint64) uint64 {
 	var occupancy uint64
 
-	// loop over bits in attack mask
+	// loop over relevant bits
 	for count := uint64(0); count < bitsInMask; count++ {
+		// remove least significant bit from attack mask
 		square := getLeastSignificantBitIndex(attackMask)
 		attackMask = popBit(attackMask, square)
+		// update occupancy if on the board
 		if (index & (uint64(1) << count)) != 0 {
 			occupancy |= uint64(1) << square
 		}

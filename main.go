@@ -34,8 +34,8 @@ func printBitboard(b uint64) {
 // init
 func initAll() {
 	initLeapersAttacks()
-	initSliderAttacks(bishop)
-	initSliderAttacks(rook)
+	initSlidersAttacks(bishop)
+	initSlidersAttacks(rook)
 }
 
 // main

@@ -1,27 +1,31 @@
 package main
 
+//*********************************
+//            bits
+//*********************************
+
 // check if a bit is on or off
-func getBit(b uint64, square uint64) uint64 {
-	return b & uint64(1) << square
+func getBit(bitboard uint64, square uint64) uint64 {
+	return bitboard & uint64(1) << square
 }
 
 // turn on a bit
-func setBit(b uint64, square uint64) uint64 {
-	return b | uint64(1)<<square
+func setBit(bitboard uint64, square uint64) uint64 {
+	return bitboard | uint64(1)<<square
 }
 
 // turn off a bit
-func popBit(b uint64, square uint64) uint64 {
-	return b & ^(uint64(1) << square)
+func popBit(bitboard uint64, square uint64) uint64 {
+	return bitboard & ^(uint64(1) << square)
 }
 
 // count the number of bits on a bitboard
-func countBits(b uint64) uint64 {
+func countBits(bitboard uint64) uint64 {
 	count := uint64(0)
 	for {
-		b &= b - 1
+		bitboard &= bitboard - 1
 		count += 1
-		if b == 0 {
+		if bitboard == 0 {
 			break
 		}
 	}
@@ -41,6 +45,10 @@ func getLeastSignificantBitIndex(b uint64) uint64 {
 	}
 
 }
+
+//*********************************
+//            random
+//*********************************
 
 // generate pseudo random 32 bit number
 var currentRandom = uint32(1804289383)
