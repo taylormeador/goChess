@@ -43,7 +43,7 @@ func initSlidersAttacks(piece int) {
 		rookMasks[square] = maskRookAttacks(square)
 
 		// init current mask
-		if piece == 1 {
+		if piece == bishop {
 			// bishop
 			attackMask = bishopMasks[square]
 		} else {

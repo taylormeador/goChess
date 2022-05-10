@@ -6,12 +6,12 @@ package main
 
 // check if a bit is on or off
 func getBit(bitboard uint64, square uint64) uint64 {
-	return bitboard & uint64(1) << square
+	return bitboard & (uint64(1) << square)
 }
 
 // turn on a bit
 func setBit(bitboard uint64, square uint64) uint64 {
-	return bitboard | uint64(1)<<square
+	return bitboard | (uint64(1) << square)
 }
 
 // turn off a bit
@@ -41,7 +41,7 @@ func getLeastSignificantBitIndex(b uint64) uint64 {
 		return countBits(leadingOnes)
 	} else {
 		// return out of range index if the board is empty
-		return uint64(64)
+		return uint64(65)
 	}
 
 }
