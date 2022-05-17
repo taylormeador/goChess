@@ -123,15 +123,20 @@ const (
 
 // castling rights
 const (
-	// 1111 => all castling rights
-	// 1000 => white can castle king side
-	// 1101 => black cannot castle king side
+	// bq bk wq wk
+	// 1  1  1  1   => all castling rights
+	// 1000 => black can castle queen side
+	// 1101 => white cannot castle queen side
 	// 0000 => no one can castle
 	wk = 1
 	wq = 2
 	bk = 4
 	bq = 8
 )
+
+var pieceToCastle = map[byte]int{
+	'K': wk, 'Q': wq, 'k': bk, 'q': bq,
+}
 
 // ASCII pieces
 var asciiPieces = [12]byte{
@@ -319,3 +324,12 @@ var bishopMagicNumbers = [64]uint64{
 	0x8918844842082200,
 	0x4010011029020020,
 }
+
+// FEN debug strings
+const (
+	emptyBoard     = "8/8/8/8/8/8/8/8 w - - "
+	startPosition  = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 "
+	trickyPosition = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1 "
+	killerPosition = "rnbqkb1r/pp1p1pPp/8/2p1pP2/1P1P4/3P3P/P1P1P3/RNBQKBNR w KQkq e6 0 1"
+	cmkPosition    = "r2q1rk1/ppp2ppp/2n1bn2/2b1p3/3pP3/3P1NPP/PPP1NPB1/R1BQ1RK1 b - - 0 9 "
+)

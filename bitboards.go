@@ -11,3 +11,6 @@ var side = -1
 
 // en passant square
 var enPassantSquare = noSquare
+
+// castling rights
+var castle = -1
