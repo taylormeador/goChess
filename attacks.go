@@ -343,6 +343,29 @@ func getRookAttacks(square uint64, occupancy uint64) uint64 {
 //*********************************
 
 // queen moves are just rook + bishop moves
+func getQueenAttacks(square uint64, occupancy uint64) uint64 {
+
+	// current bishop occupancy
+	bishopOccupancy := occupancy
+	bishopOccupancy &= bishopMasks[square]
+	bishopOccupancy *= bishopMagicNumbers[square]
+	bishopOccupancy >>= 64 - bishopRelevantBits[square]
+
+	// current bishop attacks
+	queenAttacks := bishopAttacks[square][bishopOccupancy]
+
+	// current rook occupancy
+	rookOccupancy := occupancy
+	rookOccupancy &= rookMasks[square]
+	rookOccupancy *= rookMagicNumbers[square]
+	rookOccupancy >>= 64 - rookRelevantBits[square]
+
+	// current rook attacks
+	queenAttacks |= rookAttacks[square][rookOccupancy]
+
+	// return attacks for current occupancy
+	return queenAttacks
+}
 
 //*********************************
 //              misc

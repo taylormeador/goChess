@@ -10,5 +10,5 @@ func initAll() {
 // main
 func main() {
 	initAll()
-	parseFEN(cmkPosition)
+	printBitboard(getQueenAttacks(d5, uint64(18303478847064064385)))
 }
