@@ -10,5 +10,16 @@ func initAll() {
 // main
 func main() {
 	initAll()
-	printBitboard(getQueenAttacks(d5, uint64(18303478847064064385)))
+	//printAttackedSquares(white)
+	//printAttackedSquares(black)
+	parseFEN(emptyBoard)
+	printBoard()
+	parseFEN(startPosition)
+	printBoard()
+	parseFEN(trickyPosition)
+	printBoard()
+	parseFEN(killerPosition)
+	printBoard()
+	parseFEN(cmkPosition)
+	printBoard()
 }

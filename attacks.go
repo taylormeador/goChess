@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 //*********************************
 //           globals
 //*********************************
@@ -344,24 +346,8 @@ func getRookAttacks(square uint64, occupancy uint64) uint64 {
 
 // queen moves are just rook + bishop moves
 func getQueenAttacks(square uint64, occupancy uint64) uint64 {
-
-	// current bishop occupancy
-	bishopOccupancy := occupancy
-	bishopOccupancy &= bishopMasks[square]
-	bishopOccupancy *= bishopMagicNumbers[square]
-	bishopOccupancy >>= 64 - bishopRelevantBits[square]
-
-	// current bishop attacks
-	queenAttacks := bishopAttacks[square][bishopOccupancy]
-
-	// current rook occupancy
-	rookOccupancy := occupancy
-	rookOccupancy &= rookMasks[square]
-	rookOccupancy *= rookMagicNumbers[square]
-	rookOccupancy >>= 64 - rookRelevantBits[square]
-
-	// current rook attacks
-	queenAttacks |= rookAttacks[square][rookOccupancy]
+	// current rook and bishop attacks
+	queenAttacks := getRookAttacks(square, occupancy) | getBishopAttacks(square, occupancy)
 
 	// return attacks for current occupancy
 	return queenAttacks
@@ -386,4 +372,42 @@ func setOccupancy(index uint64, bitsInMask uint64, attackMask uint64) uint64 {
 		}
 	}
 	return occupancy
+}
+
+// determine if a square is attacked by an enemy piece
+func isSquareAttacked(square uint64, side int) int {
+	// attacked by black pawns
+	if side == white { // white's turn
+		if pawnAttacks[black][square]&bitboards[P] != 0 {
+			return 1
+		}
+	}
+
+	// attacked by white pawns
+	if side == black { // black's turn
+		if pawnAttacks[white][square]&bitboards[p] != 0 {
+			return 1
+		}
+	}
+
+	// attacked by knight
+	if knightAttacks[square] != 0 {
+		return 1 // TODO
+	}
+
+	return 0
+}
+
+func printAttackedSquares(side int) {
+	fmt.Println()
+	for rank := uint64(0); rank < 8; rank++ {
+		fmt.Printf("  %d  ", 8-rank)
+		for file := uint64(0); file < 8; file++ {
+			square := rank*8 + file
+			fmt.Printf(" %d ", isSquareAttacked(square, side))
+		}
+		fmt.Println()
+	}
+	fmt.Println()
+	fmt.Print("      a  b  c  d  e  f  g  h\n\n")
 }
