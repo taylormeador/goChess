@@ -82,7 +82,7 @@ const (
 	noSquare
 )
 
-// convert square name string to square uint64
+// convert square name string to constant square uint64
 func squareStringToUint64(s string) uint64 {
 	switch s {
 	case "a8":
@@ -250,10 +250,12 @@ const (
 	//       a  b  c  d  e  f  g  h
 	//       Bitboard: 18374403900871474942
 
-	notAFile  = uint64(18374403900871474942)
-	notHFile  = uint64(9187201950435737471)
-	notABFile = uint64(18229723555195321596)
-	notGHFile = uint64(4557430888798830399)
+	notAFile    = uint64(18374403900871474942)
+	notHFile    = uint64(9187201950435737471)
+	notABFile   = uint64(18229723555195321596)
+	notGHFile   = uint64(4557430888798830399)
+	secondRank  = uint64(71776119061217280)
+	seventhRank = uint64(65280)
 )
 
 // castling rights
@@ -463,7 +465,7 @@ var bishopMagicNumbers = [64]uint64{
 // FEN debug strings
 const (
 	emptyBoard     = "8/8/8/8/8/8/8/8 w - - 0 1"
-	startPosition  = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+	startPosition  = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1"
 	trickyPosition = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"
 	killerPosition = "rnbqkb1r/pp1p1pPp/8/2p1pP2/1P1P4/3P3P/P1P1P3/RNBQKBNR w KQkq e6 0 1"
 	cmkPosition    = "r2q1rk1/ppp2ppp/2n1bn2/2b1p3/3pP3/3P1NPP/PPP1NPB1/R1BQ1RK1 b - - 0 9"

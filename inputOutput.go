@@ -146,12 +146,12 @@ func parseFEN(FEN string) {
 
 	// set occupancies
 	// loop through white pieces
-	for piece := P; piece < K; piece++ {
+	for piece := P; piece <= K; piece++ {
 		occupancies[white] |= bitboards[piece]
 	}
 
 	// loop through black pieces
-	for piece := p; piece < k; piece++ {
+	for piece := p; piece <= k; piece++ {
 		occupancies[black] |= bitboards[piece]
 	}
 

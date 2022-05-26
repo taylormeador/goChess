@@ -11,7 +11,9 @@ func initAll() {
 func main() {
 	initAll()
 
-	parseFEN(trickyPosition)
+	parseFEN("rnbqkbnr/pppppppp/8/8/2PpP3/8/PPPPPPPP/RNBQKBNR b KQkq e3 0 1")
+	//parseFEN(trickyPosition)
 	printBoard()
-	printAttackedSquares(white)
+	printBitboard(generateMoves(d4))
+
 }
