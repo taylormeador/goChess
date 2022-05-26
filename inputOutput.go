@@ -68,7 +68,7 @@ func printBoard() {
 func parseFEN(FEN string) {
 	// reset variables
 	bitboards = [12]uint64{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-	occupancyBitboards = [3]uint64{0, 0, 0}
+	occupancies = [3]uint64{0, 0, 0}
 	side = 0
 	enPassantSquare = noSquare
 	castle = 0
@@ -144,4 +144,33 @@ func parseFEN(FEN string) {
 	// en passant
 	enPassantSquare = squareStringToUint64(enPassant)
 
+	// set occupancies
+	// loop through white pieces
+	for piece := P; piece < K; piece++ {
+		occupancies[white] |= bitboards[piece]
+	}
+
+	// loop through black pieces
+	for piece := p; piece < k; piece++ {
+		occupancies[black] |= bitboards[piece]
+	}
+
+	// both
+	occupancies[both] = occupancies[white] | occupancies[black]
+
+}
+
+// print 1 or 0 for a square, depending on if it is attacked by an enemy piece or not
+func printAttackedSquares(side int) {
+	fmt.Println()
+	for rank := uint64(0); rank < 8; rank++ {
+		fmt.Printf("  %d  ", 8-rank)
+		for file := uint64(0); file < 8; file++ {
+			square := rank*8 + file
+			fmt.Printf(" %d ", isSquareAttacked(square, side))
+		}
+		fmt.Println()
+	}
+	fmt.Println()
+	fmt.Print("      a  b  c  d  e  f  g  h\n\n")
 }

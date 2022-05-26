@@ -1,7 +1,5 @@
 package main
 
-import "fmt"
-
 //*********************************
 //           globals
 //*********************************
@@ -374,40 +372,73 @@ func setOccupancy(index uint64, bitsInMask uint64, attackMask uint64) uint64 {
 	return occupancy
 }
 
-// determine if a square is attacked by an enemy piece
+// determine if a square is attacked
 func isSquareAttacked(square uint64, side int) int {
 	// attacked by black pawns
 	if side == white { // white's turn
 		if pawnAttacks[black][square]&bitboards[P] != 0 {
 			return 1
 		}
-	}
-
-	// attacked by white pawns
-	if side == black { // black's turn
+	} else if side == black { // attacked by white pawns
 		if pawnAttacks[white][square]&bitboards[p] != 0 {
 			return 1
 		}
 	}
 
 	// attacked by knight
-	if knightAttacks[square] != 0 {
-		return 1 // TODO
+	if side == white {
+		if knightAttacks[square]&bitboards[N] != 0 {
+			return 1
+		}
+	} else if side == black {
+		if knightAttacks[square]&bitboards[n] != 0 {
+			return 1
+		}
+	}
+
+	// attacked by king
+	if side == white {
+		if kingAttacks[square]&bitboards[K] != 0 {
+			return 1
+		}
+	} else if side == black {
+		if kingAttacks[square]&bitboards[k] != 0 {
+			return 1
+		}
+	}
+
+	// attacked by bishop
+	if side == white {
+		if getBishopAttacks(square, occupancies[both])&bitboards[B] != 0 {
+			return 1
+		}
+	} else if side == black {
+		if getBishopAttacks(square, occupancies[both])&bitboards[b] != 0 {
+			return 1
+		}
+	}
+
+	// attacked by rook
+	if side == white {
+		if getRookAttacks(square, occupancies[both])&bitboards[R] != 0 {
+			return 1
+		}
+	} else if side == black {
+		if getRookAttacks(square, occupancies[both])&bitboards[r] != 0 {
+			return 1
+		}
+	}
+
+	// attacked by queen
+	if side == white {
+		if getQueenAttacks(square, occupancies[both])&bitboards[Q] != 0 {
+			return 1
+		}
+	} else if side == black {
+		if getQueenAttacks(square, occupancies[both])&bitboards[q] != 0 {
+			return 1
+		}
 	}
 
 	return 0
-}
-
-func printAttackedSquares(side int) {
-	fmt.Println()
-	for rank := uint64(0); rank < 8; rank++ {
-		fmt.Printf("  %d  ", 8-rank)
-		for file := uint64(0); file < 8; file++ {
-			square := rank*8 + file
-			fmt.Printf(" %d ", isSquareAttacked(square, side))
-		}
-		fmt.Println()
-	}
-	fmt.Println()
-	fmt.Print("      a  b  c  d  e  f  g  h\n\n")
 }
