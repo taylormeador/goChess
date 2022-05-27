@@ -59,9 +59,9 @@ func printBoard() {
 	fmt.Println()
 	// print files and bitboard integer value
 	fmt.Printf("      a  b  c  d  e  f  g  h\n\n")
-	fmt.Printf("side: %d\n", side)
-	fmt.Printf("castling: %d\n", castle)
-	fmt.Printf("en-passant: %d\n", enPassantSquare)
+	fmt.Printf("side: %s\n", colorFromInt(side))
+	fmt.Printf("castling: %s\n", castleToString(castle))
+	fmt.Printf("en-passant: %s\n", algebraic[enPassantSquare])
 }
 
 // parse FEN string

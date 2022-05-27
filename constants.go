@@ -1,11 +1,25 @@
 package main
 
+import "strings"
+
 // enumerate colors
 const (
 	white = iota
 	black
 	both
 )
+
+func colorFromInt(side int) string {
+	switch side {
+	case 0:
+		return "white"
+	case 1:
+		return "black"
+	case 2:
+		return "both"
+	}
+	return "error getting color"
+}
 
 // rook and bishop
 const (
@@ -275,6 +289,24 @@ var pieceToCastle = map[byte]int{
 	'K': wk, 'Q': wq, 'k': bk, 'q': bq,
 }
 
+func castleToString(castle int) string {
+	var sb strings.Builder
+
+	if castle&wk != 0 {
+		sb.WriteString("K")
+	}
+	if castle&wq != 0 {
+		sb.WriteString("Q")
+	}
+	if castle&bk != 0 {
+		sb.WriteString("k")
+	}
+	if castle&bq != 0 {
+		sb.WriteString("q")
+	}
+	return sb.String()
+}
+
 // ASCII pieces
 var asciiPieces = [12]byte{
 	'P', 'N', 'B', 'R', 'Q', 'K', 'p', 'n', 'b', 'r', 'q', 'k',
@@ -291,7 +323,7 @@ var charPieces = map[byte]int{
 }
 
 // easy way to lookup name of square from index in bitboard
-var algebraic = [64]string{
+var algebraic = [65]string{
 	"a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8",
 	"a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7",
 	"a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6",
@@ -299,7 +331,7 @@ var algebraic = [64]string{
 	"a4", "b4", "c4", "d4", "e4", "f4", "g4", "h4",
 	"a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3",
 	"a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2",
-	"a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1",
+	"a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1", "-",
 }
 
 // relevant occupancy bit counts for a rook at every square on board
