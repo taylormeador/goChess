@@ -2,6 +2,8 @@ package main
 
 import "fmt"
 
+var moveList []uint64
+
 func generateMoves(sourceSquare uint64) {
 	startSquare := uint64(1) << sourceSquare
 	var targetSquare uint64
@@ -300,37 +302,72 @@ func encodeMove(source uint64, target uint64, piece uint64, promoted uint64, cap
 }
 
 // return the specified attribute of an encoded move
-func getMoveAttr(move uint64, attr uint64) uint64 {
+func getMoveAttr(move uint64, attr string) uint64 {
 	switch attr {
-	case 0: // source
+	case "source":
 		return move & 0x3f
-	case 1: // target
+	case "target": // target
 		return (move & 0xfc0) >> 6
-	case 2: // piece
+	case "piece": // piece
 		return (move & 0xf000) >> 12
-	case 3: // promoted
+	case "promoted": // promoted
 		return (move & 0xf0000) >> 16
-	case 4: // capture
+	case "capture": // capture
 		if move&0x100000 != 0 {
 			return 1
 		}
 		return 0
 
-	case 5: // double
+	case "double": // double
 		if move&0x200000 != 0 {
 			return 1
 		}
 		return 0
-	case 6: // enPassant
+	case "enPassant": // enPassant
 		if move&0x400000 != 0 {
 			return 1
 		}
 		return 0
-	case 7: // castling
+	case "castling": // castling
 		if move&0x800000 != 0 {
 			return 1
 		}
 		return 0
 	}
 	return 33554431
+}
+
+// append move to moveList
+func addMove(move uint64) {
+	moveList = append(moveList, move)
+}
+
+// print move source, target, and promoted piece
+func printMove(move uint64) {
+	fmt.Printf("%s%s%s\n", algebraic[getMoveAttr(move, "source")],
+		algebraic[getMoveAttr(move, "target")], stringPieces[getMoveAttr(move, "promoted")],
+	)
+}
+
+// loop through all moves in move list and print
+func printMoveList() {
+	// formatting
+	fmt.Printf("\n    move    piece   capture   double    enpass    castling\n\n")
+
+	// loop through movesList
+	for _, move := range moveList {
+		fmt.Printf("    %s%s%s   %s       %d         %d         %d         %d\n",
+			algebraic[getMoveAttr(move, "source")],
+			algebraic[getMoveAttr(move, "target")],
+			stringPieces[getMoveAttr(move, "promoted")],
+			stringPieces[getMoveAttr(move, "piece")],
+			getMoveAttr(move, "capture"),
+			getMoveAttr(move, "double"),
+			getMoveAttr(move, "enPassant"),
+			getMoveAttr(move, "castling"),
+		)
+	}
+	// print total number of moves
+	fmt.Println()
+	fmt.Printf("    Total number of moves: %d\n\n", len(moveList))
 }

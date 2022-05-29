@@ -307,6 +307,11 @@ func castleToString(castle int) string {
 	return sb.String()
 }
 
+// string pieces
+var stringPieces = [12]string{
+	"P", "N", "B", "R", "Q", "K", "p", "n", "b", "r", "q", "k",
+}
+
 // ASCII pieces
 var asciiPieces = [12]byte{
 	'P', 'N', 'B', 'R', 'Q', 'K', 'p', 'n', 'b', 'r', 'q', 'k',
