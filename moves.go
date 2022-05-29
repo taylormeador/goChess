@@ -277,3 +277,60 @@ func generateMoves(sourceSquare uint64) {
 		}
 	}
 }
+
+/*  encode moves in binary
+      binary move bits                               hexidecimal constants
+
+0000 0000 0000 0000 0011 1111    source square       0x3f
+0000 0000 0000 1111 1100 0000    target square       0xfc0
+0000 0000 1111 0000 0000 0000    piece               0xf000
+0000 1111 0000 0000 0000 0000    promoted piece      0xf0000
+0001 0000 0000 0000 0000 0000    capture flag        0x100000
+0010 0000 0000 0000 0000 0000    double push flag    0x200000
+0100 0000 0000 0000 0000 0000    enpassant flag      0x400000
+1000 0000 0000 0000 0000 0000    castling flag       0x800000
+*/
+func encodeMove(source uint64, target uint64, piece uint64, promoted uint64, capture uint64,
+	double uint64, enPassant uint64, castling uint64) uint64 {
+
+	move := source | (target << 6) | (piece << 12) | (promoted << 16) | (capture << 20) |
+		(double << 21) | (enPassant << 22) | (castling << 23)
+
+	return move
+}
+
+// return the specified attribute of an encoded move
+func getMoveAttr(move uint64, attr uint64) uint64 {
+	switch attr {
+	case 0: // source
+		return move & 0x3f
+	case 1: // target
+		return (move & 0xfc0) >> 6
+	case 2: // piece
+		return (move & 0xf000) >> 12
+	case 3: // promoted
+		return (move & 0xf0000) >> 16
+	case 4: // capture
+		if move&0x100000 != 0 {
+			return 1
+		}
+		return 0
+
+	case 5: // double
+		if move&0x200000 != 0 {
+			return 1
+		}
+		return 0
+	case 6: // enPassant
+		if move&0x400000 != 0 {
+			return 1
+		}
+		return 0
+	case 7: // castling
+		if move&0x800000 != 0 {
+			return 1
+		}
+		return 0
+	}
+	return 33554431
+}

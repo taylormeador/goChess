@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 // init
 func initAll() {
 	initLeapersAttacks()
@@ -15,10 +17,13 @@ func main() {
 	//parseFEN(startPosition)
 	printBoard()
 
-	for rank := uint64(0); rank < 8; rank++ {
-		for file := uint64(0); file < 8; file++ {
-			square := rank*8 + file
-			generateMoves(square)
-		}
-	}
+	//for rank := uint64(0); rank < 8; rank++ {
+	//	for file := uint64(0); file < 8; file++ {
+	//		square := rank*8 + file
+	//		generateMoves(square)
+	//	}
+	//}
+	move := encodeMove(e2, e4, k, 1, 1, 0, 0, 0)
+	//printBitboard(1 << getMoveAttr(move, 1))
+	fmt.Println(getMoveAttr(move, 7))
 }
