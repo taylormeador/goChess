@@ -33,10 +33,10 @@ func countBits(bitboard uint64) uint64 {
 }
 
 // get the index of the least significant bit that is on
-func getLeastSignificantBitIndex(b uint64) uint64 {
+func getLeastSignificantBitIndex(bitboard uint64) uint64 {
 	// check for a non empty bitboard
-	if b >= 0 {
-		leastSignificantBit := b & -b
+	if bitboard >= 0 {
+		leastSignificantBit := bitboard & -bitboard
 		leadingOnes := leastSignificantBit - 1
 		return countBits(leadingOnes)
 	} else {
