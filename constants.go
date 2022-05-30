@@ -268,8 +268,10 @@ const (
 	notHFile    = uint64(9187201950435737471)
 	notABFile   = uint64(18229723555195321596)
 	notGHFile   = uint64(4557430888798830399)
+	firstRank   = uint64(18302628885633695745)
 	secondRank  = uint64(71776119061217280)
 	seventhRank = uint64(65280)
+	eighthRank  = uint64(255)
 )
 
 // castling rights
@@ -325,6 +327,22 @@ var unicodePieces = [12]string{
 // convert ASCII character to encoded constants
 var charPieces = map[byte]int{
 	'P': 0, 'N': 1, 'B': 2, 'R': 3, 'Q': 4, 'K': 5, 'p': 6, 'n': 7, 'b': 8, 'r': 9, 'q': 10, 'k': 11,
+}
+
+// convert promoted piece move encoding to string piece
+var promotedPieces = map[uint64]string{
+	0:  " ",
+	1:  "N",
+	2:  "B",
+	3:  "R",
+	4:  "Q",
+	5:  " ",
+	6:  " ",
+	7:  "n",
+	8:  "b",
+	9:  "r",
+	10: "q",
+	11: " ",
 }
 
 // lookup name of square from index in bitboard

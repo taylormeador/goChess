@@ -16,6 +16,9 @@ func setBit(bitboard uint64, square uint64) uint64 {
 
 // turn off a bit
 func popBit(bitboard uint64, square uint64) uint64 {
+	if square == 1 {
+		return bitboard & ^uint64(1)
+	}
 	return bitboard & ^(uint64(1) << square)
 }
 
@@ -35,10 +38,12 @@ func countBits(bitboard uint64) uint64 {
 // get the index of the least significant bit that is on
 func getLeastSignificantBitIndex(bitboard uint64) uint64 {
 	// check for a non empty bitboard
-	if bitboard >= 0 {
+	if bitboard > 1 {
 		leastSignificantBit := bitboard & -bitboard
 		leadingOnes := leastSignificantBit - 1
 		return countBits(leadingOnes)
+	} else if bitboard == 1 { // TODO
+		return 0
 	} else {
 		// return out of range index if the board is empty
 		return uint64(65)
