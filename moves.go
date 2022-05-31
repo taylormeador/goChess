@@ -2,8 +2,10 @@ package main
 
 import "fmt"
 
+// global for keeping track of generated moves in a position
 var moveList []uint64
 
+// generate moves for a given square
 func generateMoves(sourceSquare uint64) {
 	startSquare := uint64(1) << sourceSquare
 	var targetSquare, move uint64
