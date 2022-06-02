@@ -8,6 +8,7 @@ var moveList []uint64
 // generate moves for a given square
 func generateMoves(sourceSquare uint64) {
 	startSquare := uint64(1) << sourceSquare
+
 	var targetSquare, move uint64
 	var promotionRank, promotionRankMinusOne, pawnStartRank, pawnPush, doublePawnPush, pawnPromotion uint64
 	var pawnPushOffset, doublePawnPushOffset, kingStartSquare uint64
@@ -115,7 +116,7 @@ func generateMoves(sourceSquare uint64) {
 			enPassantCapture := pawnAttacks[side][sourceSquare] & (1 << enPassantSquare)
 			if enPassantCapture != 0 {
 				targetSquare = getLeastSignificantBitIndex(enPassantCapture)
-				addMove(encodeMove(sourceSquare, targetSquare, pawn, 0, 1, 0, 0, 0))
+				addMove(encodeMove(sourceSquare, targetSquare, pawn, 0, 1, 0, 1, 0))
 			}
 		}
 	}
@@ -219,10 +220,38 @@ func generateMoves(sourceSquare uint64) {
 			}
 		}
 	}
+
+	// king moves
+	if bitboards[king]&startSquare != 0 {
+		kingMoves := kingAttacks[sourceSquare] & ^occupancies[side]
+		for {
+			if kingMoves != 0 {
+				targetSquare = getLeastSignificantBitIndex(kingMoves)
+				if occupancies[enemyColor]&(1<<targetSquare) != 0 { // king attacking enemy piece
+					addMove(encodeMove(sourceSquare, targetSquare, king, 0, 0, 0, 0, 0))
+				} else {
+					addMove(encodeMove(sourceSquare, targetSquare, king, 0, 0, 0, 0, 0))
+				}
+				kingMoves = popBit(kingMoves, targetSquare)
+			} else {
+				break
+			}
+		}
+	}
+}
+
+// generate moves for all squares
+func generateAllMoves() {
+	for rank := uint64(0); rank < 8; rank++ {
+		for file := uint64(0); file < 8; file++ {
+			square := rank*8 + file
+			generateMoves(square)
+		}
+	}
 }
 
 /*  encode moves in binary
-      binary move bits                               hexidecimal constants
+      binary move bits                               hexadecimal constants
 
 0000 0000 0000 0000 0011 1111    source square       0x3f
 0000 0000 0000 1111 1100 0000    target square       0xfc0
@@ -286,7 +315,7 @@ func addMove(move uint64) {
 // print move source, target, and promoted piece
 func printMove(move uint64) {
 	fmt.Printf("%s%s%s\n", algebraic[getMoveAttr(move, "source")],
-		algebraic[getMoveAttr(move, "target")], stringPieces[getMoveAttr(move, "promoted")],
+		algebraic[getMoveAttr(move, "target")], promotedPieces[getMoveAttr(move, "promoted")],
 	)
 }
 
@@ -311,4 +340,103 @@ func printMoveList() {
 	// print total number of moves
 	fmt.Println()
 	fmt.Printf("    Total number of moves: %d\n\n", len(moveList))
+}
+
+func makeMove(move uint64) {
+	// decode move
+	source := getMoveAttr(move, "source")
+	target := getMoveAttr(move, "target")
+	promoted := getMoveAttr(move, "promoted")
+	piece := getMoveAttr(move, "piece")
+	capture := getMoveAttr(move, "capture")
+	double := getMoveAttr(move, "double")
+	enPassant := getMoveAttr(move, "enPassant")
+	castling := getMoveAttr(move, "castling")
+
+	// remove piece from source square
+	bitboards[piece] = popBit(bitboards[piece], source)
+
+	// place piece on target square
+	bitboards[piece] = setBit(bitboards[piece], target)
+
+	// handle promotion
+	if promoted != 0 {
+		// remove piece from target square
+		bitboards[piece] = popBit(bitboards[piece], target)
+
+		// place promoted piece on target square
+		bitboards[promoted] = setBit(bitboards[promoted], target)
+	}
+
+	// handle capture
+	if capture != 0 {
+		// set piece bounds for loop
+		var startPiece, endPiece uint64
+		if side == white {
+			startPiece = p
+			endPiece = k
+		} else if side == black {
+			startPiece = P
+			endPiece = K
+		}
+
+		// loop through enemy piece bitboards and remove the captured piece, if it's there
+		for targetPiece := startPiece; targetPiece <= endPiece; targetPiece++ {
+			if getBit(bitboards[targetPiece], target) != 0 {
+				bitboards[targetPiece] = popBit(bitboards[targetPiece], target)
+				break
+			}
+		}
+	}
+
+	// handle double pawn moves
+	if double != 0 {
+		// set enPassantSquare
+		if side == white {
+			enPassantSquare = target + 8
+		} else if side == black {
+			enPassantSquare = target - 8
+		}
+	} else {
+		enPassantSquare = noSquare
+	}
+
+	// handle en passant
+	if enPassant != 0 {
+		// need to remove the piece one rank ahead or behind the target, depending on side
+		if side == white {
+			bitboards[p] = popBit(bitboards[p], target+8)
+		} else if side == black {
+			bitboards[P] = popBit(bitboards[P], target-8)
+		}
+	}
+
+	// handle castling moves
+	if castling != 0 {
+		switch target {
+		// white castles king side
+		case g1:
+			// move the h rook
+			bitboards[R] = popBit(bitboards[R], h1)
+			bitboards[R] = setBit(bitboards[R], f1)
+
+		// white castles queen side
+		case c1:
+			// move the a rook
+			bitboards[R] = popBit(bitboards[R], a1)
+			bitboards[R] = setBit(bitboards[R], d1)
+
+		// black castles king side
+		case g8:
+			// move the h rook
+			bitboards[r] = popBit(bitboards[r], h8)
+			bitboards[r] = setBit(bitboards[r], f8)
+
+		// black castles queen side
+		case c8:
+			// move the a rook
+			bitboards[r] = popBit(bitboards[r], a8)
+			bitboards[r] = setBit(bitboards[r], d8)
+		}
+	}
 }

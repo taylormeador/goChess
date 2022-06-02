@@ -24,8 +24,11 @@ type gameState struct {
 	castle          int
 }
 
-// returns a copy of the gamestate
-func copyBoard() gameState {
+// global for storing game state
+var gameStateCopy gameState
+
+// stores a copy of the gamestate to global variable
+func copyBoard() {
 	var state gameState
 
 	state.bitboards = bitboards
@@ -34,14 +37,14 @@ func copyBoard() gameState {
 	state.side = side
 	state.castle = castle
 
-	return state
+	gameStateCopy = state
 }
 
-// sets the relevant global vars to reflect the given gamestate
-func restoreBoard(state gameState) {
-	bitboards = state.bitboards
-	occupancies = state.occupancies
-	enPassantSquare = state.enPassantSquare
-	side = state.side
-	castle = state.castle
+// sets the relevant global vars to reflect the stored gamestate
+func restoreBoard() {
+	bitboards = gameStateCopy.bitboards
+	occupancies = gameStateCopy.occupancies
+	enPassantSquare = gameStateCopy.enPassantSquare
+	side = gameStateCopy.side
+	castle = gameStateCopy.castle
 }
