@@ -187,7 +187,11 @@ func generateMoves(sourceSquare uint64) {
 
 	// rook moves
 	if bitboards[rook]&startSquare != 0 { // there is a rook on the square
-		rookMoves := getRookAttacks(sourceSquare, occupancies[both]) & ^occupancies[side]
+		rookMoves := getRookAttacks(sourceSquare, occupancies[both])
+		// debug
+		//fmt.Println(sourceSquare)
+		//printBitboard(occupancies[both])
+		//printBitboard(^occupancies[side])
 		for {
 			if rookMoves != 0 {
 				targetSquare = getLeastSignificantBitIndex(rookMoves)
@@ -245,7 +249,9 @@ func generateAllMoves() {
 	for rank := uint64(0); rank < 8; rank++ {
 		for file := uint64(0); file < 8; file++ {
 			square := rank*8 + file
-			generateMoves(square)
+			fmt.Println(square)
+			printBitboard(1 << square)
+			//generateMoves(square)
 		}
 	}
 }
@@ -439,4 +445,7 @@ func makeMove(move uint64) {
 			bitboards[r] = setBit(bitboards[r], d8)
 		}
 	}
+
+	// update castling rights
+	castle &= castlingRights[source]
 }
