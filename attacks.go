@@ -46,7 +46,7 @@ func initSlidersAttacks(piece int) {
 		if piece == bishop {
 			// bishop
 			attackMask = bishopMasks[square]
-		} else {
+		} else if piece == rook {
 			// rook
 			attackMask = rookMasks[square]
 		}
@@ -59,7 +59,7 @@ func initSlidersAttacks(piece int) {
 
 		// loop over occupancy indices
 		for i := uint64(0); i < occupancyIndices; i++ {
-			if piece == 1 {
+			if piece == bishop {
 				// bishop current occupancy
 				occupancy := setOccupancy(i, relevantBitsCount, attackMask)
 
@@ -68,14 +68,18 @@ func initSlidersAttacks(piece int) {
 
 				// init current bishop attacks
 				bishopAttacks[square][magicIndex] = bishopAttacksOnTheFly(square, occupancy)
-			} else {
+			} else if piece == rook {
 				// rook current occupancy
 				occupancy := setOccupancy(i, relevantBitsCount, attackMask)
+				//if square == h8 {
+				//	printBitboard(setOccupancy(i, relevantBitsCount, attackMask))
+				//	fmt.Println(i, relevantBitsCount, attackMask)
+				//}
 
 				// magic index
 				magicIndex := (occupancy * rookMagicNumbers[square]) >> (64 - rookRelevantBits[square])
 
-				// init current bishop attacks
+				// init current rook attacks
 				rookAttacks[square][magicIndex] = rookAttacksOnTheFly(square, occupancy)
 			}
 		}

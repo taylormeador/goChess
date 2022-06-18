@@ -10,3 +10,12 @@ the move generation logic using bitboards instead of multidimensional arrays.
 -The code written here is mine, although I am following the general ideas and architecture from Chess Programming 
 on YouTube, which was written in C. I hope to expand on their design and add more features, but my concern for now is
 getting some experience writing in Go
+
+- 6/11/22
+- Found a bug in popBit func which caused the rook attacks to be generated incorrectly.
+
+- 6/17/22
+- Now it is generating more rook attacks, but attacking it's own pieces
+
+- 6/18/22
+- Fixed rook attack bug by adding a check for ally pieces at the target quare
