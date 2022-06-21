@@ -474,6 +474,8 @@ func makeMove(move uint64) int {
 		restoreBoard()
 		return 0
 	} else {
+		side = enemySide
 		return 1
 	}
+
 }

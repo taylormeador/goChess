@@ -14,10 +14,11 @@ func initAll() {
 
 // main
 func main() {
-	startTime := time.Now()
+
 	initAll()
-	parseFEN("Q3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R b KQkq - 0 1")
+	parseFEN(trickyPosition)
 	printBoard()
+	startTime := time.Now()
 	perftDriver(3)
 
 	//for _, move := range moveList {
@@ -31,5 +32,6 @@ func main() {
 	//	restoreBoard()
 	//}
 	endTime := time.Now()
+	fmt.Printf("%d nodes\n", nodes)
 	fmt.Printf("Time taken: %d", endTime.Sub(startTime))
 }
