@@ -157,7 +157,6 @@ func parseFEN(FEN string) {
 
 	// both
 	occupancies[both] = occupancies[white] | occupancies[black]
-
 }
 
 // print 1 or 0 for a square, depending on if it is attacked by an enemy piece or not

@@ -342,7 +342,8 @@ func printMoveList() {
 	fmt.Printf("    Total number of moves: %d\n\n", len(moveList))
 }
 
-func makeMove(move uint64) {
+func makeMove(move uint64) int {
+
 	// decode move
 	source := getMoveAttr(move, "source")
 	target := getMoveAttr(move, "target")
@@ -442,4 +443,37 @@ func makeMove(move uint64) {
 
 	// update castling rights
 	castle &= castlingRights[source]
+
+	// reset then update occupancies
+	occupancies[white], occupancies[black], occupancies[both] = 0, 0, 0
+
+	// loop through white pieces
+	for whitePiece := P; whitePiece <= K; whitePiece++ {
+		occupancies[white] |= bitboards[whitePiece]
+	}
+
+	// loop through black pieces
+	for blackPiece := p; blackPiece <= k; blackPiece++ {
+		occupancies[black] |= bitboards[blackPiece]
+	}
+
+	// both occupancies
+	occupancies[both] = occupancies[white] | occupancies[black]
+
+	// ensure that the king has not moved into check
+	kingLocation := a1
+	enemySide := white
+	if side == white {
+		kingLocation = getLeastSignificantBitIndex(bitboards[K])
+		enemySide = black
+	} else {
+		kingLocation = getLeastSignificantBitIndex(bitboards[k])
+	}
+	if isSquareAttacked(kingLocation, enemySide) != 0 {
+		// revert the game state
+		restoreBoard()
+		return 0
+	} else {
+		return 1
+	}
 }
