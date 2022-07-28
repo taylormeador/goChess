@@ -1,5 +1,10 @@
 package main
 
+import (
+	"fmt"
+	"strings"
+)
+
 // parse user/gui move string input e.g. "f7f8q"
 func parseMove(moveString string) uint64 {
 	generateAllMoves()
@@ -40,4 +45,51 @@ func parseMove(moveString string) uint64 {
 		}
 	}
 	return 0
+}
+
+/*
+   Example UCI commands to init position on chess board
+
+   // init start position
+   position startpos
+
+   // init start position and make the moves on chess board
+   position startpos moves e2e4 e7e5
+
+   // init position from FEN string
+   position fen r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1
+
+   // init position from fen string and make moves on chess board
+   position fen r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1 moves e2a6 e8g8
+*/
+
+// parse UCI "position" command
+func parsePosition(command string) {
+	moveFlag := false
+	// split the command by whitespace and loop through words
+	words := strings.Fields(command)
+	for i, word := range words {
+		// debug
+		fmt.Println(i, " => ", word)
+
+		// command uses either "startpos" or "fen" to tell engine what position to init
+		if i == 1 {
+			if word == "startpos" {
+				parseFEN(startPosition)
+			} else if word == "fen" {
+				fen := words[i+1 : i+7]
+				fenString := strings.Join(fen, " ")
+				parseFEN(fenString)
+			}
+		}
+
+		if word == "move" {
+			moveFlag = true
+		}
+		if moveFlag {
+			makeMove(parseMove(word))
+			printBoard()
+		}
+	}
+
 }
