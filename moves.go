@@ -314,7 +314,7 @@ func addMove(move uint64) {
 
 // print move source, target, and promoted piece
 func printMove(move uint64) {
-	fmt.Printf("%s%s%s\n", algebraic[getMoveAttr(move, "source")],
+	fmt.Printf("%s%s%s", algebraic[getMoveAttr(move, "source")],
 		algebraic[getMoveAttr(move, "target")], promotedPieces[getMoveAttr(move, "promoted")],
 	)
 }

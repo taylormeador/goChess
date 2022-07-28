@@ -1,7 +1,5 @@
 package main
 
-import "fmt"
-
 // init
 func initAll() {
 	initLeapersAttacks()
@@ -12,6 +10,6 @@ func initAll() {
 // main
 func main() {
 	initAll()
-	parseFEN(trickyPosition)
-	fmt.Println(evaluate())
+	parseFEN(startPosition)
+	searchPosition(3)
 }
