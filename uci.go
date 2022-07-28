@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"strings"
 )
 
@@ -69,9 +71,6 @@ func parsePosition(command string) {
 	// split the command by whitespace and loop through words
 	words := strings.Fields(command)
 	for i, word := range words {
-		// debug
-		fmt.Println(i, " => ", word)
-
 		// command uses either "startpos" or "fen" to tell engine what position to init
 		if i == 1 {
 			if word == "startpos" {
@@ -83,7 +82,7 @@ func parsePosition(command string) {
 			}
 		}
 
-		if word == "move" {
+		if word == "moves" {
 			moveFlag = true
 		}
 		if moveFlag {
@@ -92,4 +91,44 @@ func parsePosition(command string) {
 		}
 	}
 
+}
+
+/*
+   Example UCI commands to make engine search for the best move
+
+   // fixed depth search
+   go depth 64
+*/
+// parse UCI "go" command
+func parseGo(command string) string {
+	words := strings.Fields(command)
+	depth := words[2]
+	return depth
+}
+
+func uciLoop() {
+	for {
+		fmt.Print("enter command: ")
+		input := bufio.NewScanner(os.Stdin)
+		input.Scan()
+		command := strings.Fields(input.Text())[0]
+		fmt.Printf("command: %s\n", command)
+
+		// parse UCI "isready" command
+		if command == "isready" {
+			fmt.Printf("readyok\n")
+			continue
+		} else if command == "position" {
+			parsePosition(input.Text())
+		} else if command == "ucinewgame" {
+			parsePosition("position startpos")
+		} else if command == "go" {
+			parseGo(input.Text())
+		} else if command == "quit" {
+			break
+		} else if command == "uci" {
+			fmt.Printf("id name goChess\n")
+			fmt.Printf("uciok\n")
+		}
+	}
 }
