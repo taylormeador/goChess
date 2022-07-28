@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 // init
 func initAll() {
 	initLeapersAttacks()
@@ -10,5 +12,6 @@ func initAll() {
 // main
 func main() {
 	initAll()
-	uciLoop()
+	parseFEN(trickyPosition)
+	fmt.Println(evaluate())
 }
