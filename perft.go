@@ -84,7 +84,6 @@ func perftTest(depth int) {
 		//	algebraic[getMoveAttr(move, "source")],
 		//	algebraic[getMoveAttr(move, "target")])
 		//printBoard()
-
 		// end debug
 
 		cumulativeNodes := nodes

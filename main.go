@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 // init
 func initAll() {
 	initLeapersAttacks()
@@ -11,5 +13,11 @@ func initAll() {
 func main() {
 	initAll()
 	parseFEN(trickyPosition)
-	perftTest(2)
+	move := parseMove("b7b8b")
+	if move != 0 {
+		makeMove(move)
+		printMove(move)
+	} else {
+		fmt.Printf("Illegal move")
+	}
 }
