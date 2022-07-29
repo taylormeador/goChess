@@ -5,168 +5,163 @@ import "fmt"
 // half move counter
 var ply int
 
-// best move
-var bestMove uint64
-
 // init
 var bestMoveSoFar uint64
-
-// quiescence search
-func quiescence(alpha int, beta int) int {
-	// evaluate current position
-	evaluation := evaluate()
-
-	// fail-hard beta cutoff
-	if evaluation >= beta {
-		// node (move) fails high
-		return beta
-	}
-
-	// found a better move
-	if evaluation > alpha {
-		// PV node (move)
-		alpha = evaluation
-	}
-
-	// generate moves
-	generateAllMoves()
-
-	// loop over moves within a move list
-	for count := 0; count < len(moveList); count++ {
-
-		// preserve board state
-		copyBoard()
-
-		// increment half move counter
-		ply++
-
-		// check that move is legal
-		if makeMove(moveList[count]) == 0 {
-			// decrement half move counter if move is illegal
-			ply--
-			continue
-		}
-
-		// score current move
-		score := -quiescence(-beta, -alpha)
-
-		// decrement ply
-		ply--
-
-		// take move back
-		restoreBoard()
-
-		// fail-hard beta cutoff
-		if score >= beta {
-			// node (move) fails high
-			return beta
-		}
-
-		// found a better move
-		if score > alpha {
-			// PV node (move)
-			alpha = score
-		}
-
-	}
-	// node (move) fails low
-	return alpha
-}
+var bestMove uint64
 
 // negamax with alpha beta pruning
+//func negaMax(alpha int, beta int, depth int) int {
+//	// recursion escape condition
+//	if depth == 0 {
+//		return evaluate()
+//	}
+//
+//	// increment node counter
+//	nodes++
+//
+//	// init check vars
+//	enemySide := white
+//	currentKingBitboard := bitboards[K]
+//	if side == white {
+//		enemySide = black
+//		currentKingBitboard = bitboards[k]
+//	}
+//
+//	// is king in check
+//	inCheck := isSquareAttacked(getLeastSignificantBitIndex(currentKingBitboard), enemySide)
+//
+//	// init vars
+//	legalMoves := 0
+//	bestMoveSoFar = 0
+//	oldAlpha := alpha
+//	generateAllMoves()
+//
+//	// loop over moves within a move list
+//	for count := 0; count < len(moveList); count++ {
+//
+//		// preserve board state
+//		currentState := returnBoardCopy()
+//
+//		// increment half move counter
+//		ply++
+//
+//		// check that move is legal
+//		if makeMove(moveList[count]) == 0 {
+//			// decrement half move counter if move is illegal
+//			ply--
+//			continue
+//		}
+//
+//		// increment legalMoves counter
+//		legalMoves++
+//
+//		// score current move
+//		score := -negaMax(-beta, -alpha, depth-1)
+//
+//		// decrement ply
+//		ply--
+//
+//		// take move back
+//		restoreBoardFromCopy(currentState)
+//
+//		// fail-hard beta cutoff
+//		if score >= beta {
+//			// node (move) fails high
+//			return beta
+//		}
+//
+//		// found a better move
+//		if score > alpha {
+//			// PV node (move)
+//			alpha = score
+//
+//			// root node
+//			if ply == 0 {
+//				bestMoveSoFar = moveList[count]
+//			}
+//		}
+//	}
+//
+//	// we don't have any legal moves to make in the current postion
+//	if legalMoves == 0 {
+//		// king is in check
+//		if inCheck != 0 {
+//			// debug
+//			fmt.Println("checkmate found")
+//			printBoard()
+//
+//			// return mating score (assuming closest distance to mating position)
+//			return -49000 + ply
+//		} else { // king not in check
+//			// debug
+//			printBoard()
+//			fmt.Println("stalemate found")
+//
+//			// return stalemate score
+//			return 0
+//		}
+//	}
+//
+//	// update alpha
+//	if oldAlpha != alpha {
+//		bestMove = bestMoveSoFar
+//	}
+//	// node (move) fails low
+//	return alpha
+//}
+
 func negaMax(alpha int, beta int, depth int) int {
-	// recursion escape condition
+	// escape condition
 	if depth == 0 {
-		return quiescence(alpha, beta)
+		return evaluate()
 	}
-
-	// increment node counter
-	nodes++
-
-	// init check vars
-	currentSide := white
-	currentKingBitboard := bitboards[K]
-	if side == black {
-		currentSide = black
-		currentKingBitboard = bitboards[k]
-	}
-
-	// is king in check
-	inCheck := isSquareAttacked(getLeastSignificantBitIndex(currentKingBitboard), currentSide)
 
 	// init vars
-	legalMoves := 0
-	bestMoveSoFar = 0
-	oldAlpha := alpha
-	generateAllMoves()
+	var score int
+	var moveList []uint64
+	moveList = generateAllMoves(moveList)
 
-	// loop over moves within a move list
+	// loop through moves and evaluate
 	for count := 0; count < len(moveList); count++ {
-
-		// preserve board state
-		copyBoard()
-
-		// increment half move counter
+		// store state and increment half move counter
+		currentState := returnBoardCopy()
 		ply++
 
 		// check that move is legal
 		if makeMove(moveList[count]) == 0 {
-			// decrement half move counter if move is illegal
 			ply--
 			continue
 		}
 
-		// increment legalMoves counter
-		legalMoves++
+		// debug
+		//if depth == 1 {
+		//	printBoard()
+		//}
 
-		// score current move
-		score := -negaMax(-beta, -alpha, depth-1)
+		// recursive func call
+		score = -negaMax(-beta, -alpha, depth-1)
 
-		// decrement ply
+		// debug
+		//fmt.Printf("score: %d move: ", score)
+		//printMove(moveList[count])
+		//fmt.Println()
+
+		// restore board and decrement half move counter
+		restoreBoardFromCopy(currentState)
 		ply--
 
-		// take move back
-		restoreBoard()
-
-		// fail-hard beta cutoff
-		if score >= beta {
-			// node (move) fails high
-			return beta
-		}
-
-		// found a better move
+		// update score and associate with best move
 		if score > alpha {
-			// PV node (move)
 			alpha = score
 
-			// root node
+			// update best move iff the half move counter is 0 (root node)
+			// debug
 			if ply == 0 {
-				bestMoveSoFar = moveList[count]
+				bestMove = moveList[count]
 			}
 		}
-
 	}
-
-	// we don't have any legal moves to make in the current postion
-	if legalMoves == 0 {
-		// king is in check
-		if inCheck != 0 {
-			// return mating score (assuming closest distance to mating position)
-			fmt.Println("checkmate found")
-			return -49000 + ply
-		} else { // king not in check
-			// return stalemate score
-			fmt.Println("stalemate found")
-			return 0
-		}
-	}
-
-	// update alpha
-	if oldAlpha != alpha {
-		bestMove = bestMoveSoFar
-	}
-	// node (move) fails low
-	return alpha
+	return score
 }
 
 // search position for the best move
@@ -174,7 +169,7 @@ func searchPosition(depth int) {
 	negaMax(-50000, 50000, depth)
 
 	// best move placeholder
-	fmt.Printf("bestmove ")
+	fmt.Printf("best move: ")
 	if bestMove != 0 {
 		printMove(bestMove)
 	}

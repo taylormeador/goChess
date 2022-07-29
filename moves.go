@@ -2,11 +2,8 @@ package main
 
 import "fmt"
 
-// global for keeping track of generated moves in a position
-var moveList []uint64
-
 // generate moves for a given square
-func generateMoves(sourceSquare uint64) {
+func generateMoves(sourceSquare uint64, moveList *[]uint64) {
 	startSquare := uint64(1) << sourceSquare
 
 	var targetSquare, move uint64
@@ -74,21 +71,21 @@ func generateMoves(sourceSquare uint64) {
 		targetSquare = (pawnPush & ^occupancies[both]) & ^promotionRank
 		if targetSquare != 0 {
 			move = encodeMove(sourceSquare, pawnPushOffset, pawn, 0, 0, 0, 0, 0)
-			addMove(move)
+			addMove(move, moveList)
 		}
 		// double pawn push
 		targetSquare = doublePawnPush & ^occupancies[both]
 		squareInFront := pawnPush & ^occupancies[both]
 		if targetSquare != 0 && squareInFront != 0 { // check that the squares in front and two squares in front are empty
-			addMove(encodeMove(sourceSquare, doublePawnPushOffset, pawn, 0, 0, 1, 0, 0))
+			addMove(encodeMove(sourceSquare, doublePawnPushOffset, pawn, 0, 0, 1, 0, 0), moveList)
 		}
 		// pawn promotion
 		targetSquare = pawnPromotion & ^occupancies[both]
 		if targetSquare != 0 {
-			addMove(encodeMove(sourceSquare, pawnPushOffset, pawn, queen, 0, 0, 0, 0))
-			addMove(encodeMove(sourceSquare, pawnPushOffset, pawn, rook, 0, 0, 0, 0))
-			addMove(encodeMove(sourceSquare, pawnPushOffset, pawn, bishop, 0, 0, 0, 0))
-			addMove(encodeMove(sourceSquare, pawnPushOffset, pawn, knight, 0, 0, 0, 0))
+			addMove(encodeMove(sourceSquare, pawnPushOffset, pawn, queen, 0, 0, 0, 0), moveList)
+			addMove(encodeMove(sourceSquare, pawnPushOffset, pawn, rook, 0, 0, 0, 0), moveList)
+			addMove(encodeMove(sourceSquare, pawnPushOffset, pawn, bishop, 0, 0, 0, 0), moveList)
+			addMove(encodeMove(sourceSquare, pawnPushOffset, pawn, knight, 0, 0, 0, 0), moveList)
 		}
 	}
 
@@ -99,12 +96,12 @@ func generateMoves(sourceSquare uint64) {
 			if pawnCaptures != 0 {
 				targetSquare = getLeastSignificantBitIndex(pawnCaptures)
 				if startSquare&promotionRankMinusOne != 0 { // promotion capture
-					addMove(encodeMove(sourceSquare, targetSquare, pawn, queen, 1, 0, 0, 0))
-					addMove(encodeMove(sourceSquare, targetSquare, pawn, rook, 1, 0, 0, 0))
-					addMove(encodeMove(sourceSquare, targetSquare, pawn, knight, 1, 0, 0, 0))
-					addMove(encodeMove(sourceSquare, targetSquare, pawn, bishop, 1, 0, 0, 0))
+					addMove(encodeMove(sourceSquare, targetSquare, pawn, queen, 1, 0, 0, 0), moveList)
+					addMove(encodeMove(sourceSquare, targetSquare, pawn, rook, 1, 0, 0, 0), moveList)
+					addMove(encodeMove(sourceSquare, targetSquare, pawn, knight, 1, 0, 0, 0), moveList)
+					addMove(encodeMove(sourceSquare, targetSquare, pawn, bishop, 1, 0, 0, 0), moveList)
 				} else { // regular capture
-					addMove(encodeMove(sourceSquare, targetSquare, pawn, 0, 1, 0, 0, 0))
+					addMove(encodeMove(sourceSquare, targetSquare, pawn, 0, 1, 0, 0, 0), moveList)
 				}
 				pawnCaptures = popBit(pawnCaptures, targetSquare)
 			} else {
@@ -116,7 +113,7 @@ func generateMoves(sourceSquare uint64) {
 			enPassantCapture := pawnAttacks[side][sourceSquare] & (1 << enPassantSquare)
 			if enPassantCapture != 0 {
 				targetSquare = getLeastSignificantBitIndex(enPassantCapture)
-				addMove(encodeMove(sourceSquare, targetSquare, pawn, 0, 1, 0, 1, 0))
+				addMove(encodeMove(sourceSquare, targetSquare, pawn, 0, 1, 0, 1, 0), moveList)
 			}
 		}
 	}
@@ -127,7 +124,7 @@ func generateMoves(sourceSquare uint64) {
 			if getBit(occupancies[both], fSquare) == 0 && getBit(occupancies[both], gSquare) == 0 { // check that the kingside squares are empty
 				if isSquareAttacked(fSquare, enemyColor) == 0 && isSquareAttacked(kingStartSquare, enemyColor) == 0 { // check that travel square and the king are not attacked
 					move = encodeMove(sourceSquare, gSquare, king, 0, 0, 0, 0, 1)
-					addMove(move)
+					addMove(move, moveList)
 				}
 			}
 		}
@@ -135,7 +132,7 @@ func generateMoves(sourceSquare uint64) {
 			if getBit(occupancies[both], bSquare) == 0 && getBit(occupancies[both], cSquare) == 0 && getBit(occupancies[both], dSquare) == 0 { // check that the queenside squares are empty
 				if isSquareAttacked(dSquare, enemyColor) == 0 && isSquareAttacked(kingStartSquare, enemyColor) == 0 { // check that travel squares and the king are not attacked
 					move = encodeMove(sourceSquare, cSquare, king, 0, 0, 0, 0, 1)
-					addMove(move)
+					addMove(move, moveList)
 				}
 			}
 		}
@@ -148,7 +145,7 @@ func generateMoves(sourceSquare uint64) {
 		for {
 			if quietMoves != 0 { // knight moves to empty squares
 				targetSquare = getLeastSignificantBitIndex(quietMoves)
-				addMove(encodeMove(sourceSquare, targetSquare, knight, 0, 0, 0, 0, 0))
+				addMove(encodeMove(sourceSquare, targetSquare, knight, 0, 0, 0, 0, 0), moveList)
 				quietMoves = popBit(quietMoves, targetSquare)
 			} else {
 				break
@@ -159,7 +156,7 @@ func generateMoves(sourceSquare uint64) {
 		for {
 			if attackMoves != 0 { // the knight is attacking an enemy piece
 				targetSquare = getLeastSignificantBitIndex(attackMoves)
-				addMove(encodeMove(sourceSquare, targetSquare, knight, 0, 1, 0, 0, 0))
+				addMove(encodeMove(sourceSquare, targetSquare, knight, 0, 1, 0, 0, 0), moveList)
 				attackMoves = popBit(attackMoves, targetSquare)
 			} else {
 				break
@@ -174,9 +171,9 @@ func generateMoves(sourceSquare uint64) {
 			if bishopMoves != 0 {
 				targetSquare = getLeastSignificantBitIndex(bishopMoves)
 				if occupancies[enemyColor]&(1<<targetSquare) != 0 {
-					addMove(encodeMove(sourceSquare, targetSquare, bishop, 0, 1, 0, 0, 0))
+					addMove(encodeMove(sourceSquare, targetSquare, bishop, 0, 1, 0, 0, 0), moveList)
 				} else {
-					addMove(encodeMove(sourceSquare, targetSquare, bishop, 0, 0, 0, 0, 0))
+					addMove(encodeMove(sourceSquare, targetSquare, bishop, 0, 0, 0, 0, 0), moveList)
 				}
 				bishopMoves = popBit(bishopMoves, targetSquare)
 			} else {
@@ -192,9 +189,9 @@ func generateMoves(sourceSquare uint64) {
 			if rookMoves != 0 {
 				targetSquare = getLeastSignificantBitIndex(rookMoves)
 				if occupancies[enemyColor]&(1<<targetSquare) != 0 {
-					addMove(encodeMove(sourceSquare, targetSquare, rook, 0, 1, 0, 0, 0))
+					addMove(encodeMove(sourceSquare, targetSquare, rook, 0, 1, 0, 0, 0), moveList)
 				} else {
-					addMove(encodeMove(sourceSquare, targetSquare, rook, 0, 0, 0, 0, 0))
+					addMove(encodeMove(sourceSquare, targetSquare, rook, 0, 0, 0, 0, 0), moveList)
 				}
 				rookMoves = popBit(rookMoves, targetSquare)
 			} else {
@@ -210,9 +207,9 @@ func generateMoves(sourceSquare uint64) {
 			if queenMoves != 0 {
 				targetSquare = getLeastSignificantBitIndex(queenMoves)
 				if occupancies[enemyColor]&(1<<targetSquare) != 0 { // queen attacking enemy piece
-					addMove(encodeMove(sourceSquare, targetSquare, queen, 0, 1, 0, 0, 0))
+					addMove(encodeMove(sourceSquare, targetSquare, queen, 0, 1, 0, 0, 0), moveList)
 				} else {
-					addMove(encodeMove(sourceSquare, targetSquare, queen, 0, 0, 0, 0, 0))
+					addMove(encodeMove(sourceSquare, targetSquare, queen, 0, 0, 0, 0, 0), moveList)
 				}
 				queenMoves = popBit(queenMoves, targetSquare)
 			} else {
@@ -228,9 +225,9 @@ func generateMoves(sourceSquare uint64) {
 			if kingMoves != 0 {
 				targetSquare = getLeastSignificantBitIndex(kingMoves)
 				if occupancies[enemyColor]&(1<<targetSquare) != 0 { // king attacking enemy piece
-					addMove(encodeMove(sourceSquare, targetSquare, king, 0, 0, 0, 0, 0))
+					addMove(encodeMove(sourceSquare, targetSquare, king, 0, 0, 0, 0, 0), moveList)
 				} else {
-					addMove(encodeMove(sourceSquare, targetSquare, king, 0, 0, 0, 0, 0))
+					addMove(encodeMove(sourceSquare, targetSquare, king, 0, 0, 0, 0, 0), moveList)
 				}
 				kingMoves = popBit(kingMoves, targetSquare)
 			} else {
@@ -241,13 +238,14 @@ func generateMoves(sourceSquare uint64) {
 }
 
 // generate moves for all squares
-func generateAllMoves() {
+func generateAllMoves(moveList []uint64) []uint64 {
 	for rank := uint64(0); rank < 8; rank++ {
 		for file := uint64(0); file < 8; file++ {
 			square := rank*8 + file
-			generateMoves(square)
+			generateMoves(square, &moveList)
 		}
 	}
+	return moveList
 }
 
 /*  encode moves in binary
@@ -308,8 +306,8 @@ func getMoveAttr(move uint64, attr string) uint64 {
 }
 
 // append move to moveList
-func addMove(move uint64) {
-	moveList = append(moveList, move)
+func addMove(move uint64, moveList *[]uint64) {
+	*moveList = append(*moveList, move)
 }
 
 // print move source, target, and promoted piece
@@ -320,7 +318,7 @@ func printMove(move uint64) {
 }
 
 // loop through all moves in move list and print
-func printMoveList() {
+func printMoveList(moveList []uint64) {
 	// formatting
 	fmt.Printf("\n    move    piece   capture   double    enpass    castling\n\n")
 
@@ -343,6 +341,8 @@ func printMoveList() {
 }
 
 func makeMove(move uint64) int {
+	// preserve state
+	gameState := returnBoardCopy()
 
 	// decode move
 	source := getMoveAttr(move, "source")
@@ -469,9 +469,10 @@ func makeMove(move uint64) int {
 	} else {
 		kingLocation = getLeastSignificantBitIndex(bitboards[k])
 	}
+
 	if isSquareAttacked(kingLocation, enemySide) != 0 {
 		// revert the game state
-		restoreBoard()
+		restoreBoardFromCopy(gameState)
 		return 0
 	} else {
 		side = enemySide

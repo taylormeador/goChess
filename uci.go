@@ -9,7 +9,8 @@ import (
 
 // parse user/gui move string input e.g. "f7f8q"
 func parseMove(moveString string) uint64 {
-	generateAllMoves()
+	var moveList []uint64
+	moveList = generateAllMoves(moveList)
 	sourceSquare := moveString[:2]
 	targetSquare := moveString[2:4]
 

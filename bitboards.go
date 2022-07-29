@@ -40,6 +40,19 @@ func copyBoard() {
 	gameStateCopy = state
 }
 
+// returns a copy of the current game state
+func returnBoardCopy() gameState {
+	var state gameState
+
+	state.bitboards = bitboards
+	state.occupancies = occupancies
+	state.enPassantSquare = enPassantSquare
+	state.side = side
+	state.castle = castle
+
+	return state
+}
+
 // sets the relevant global vars to reflect the stored gamestate
 func restoreBoard() {
 	bitboards = gameStateCopy.bitboards
@@ -47,4 +60,13 @@ func restoreBoard() {
 	enPassantSquare = gameStateCopy.enPassantSquare
 	side = gameStateCopy.side
 	castle = gameStateCopy.castle
+}
+
+// sets the relevant global vars to reflect the gamestate passed as an argument
+func restoreBoardFromCopy(copy gameState) {
+	bitboards = copy.bitboards
+	occupancies = copy.occupancies
+	enPassantSquare = copy.enPassantSquare
+	side = copy.side
+	castle = copy.castle
 }

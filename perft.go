@@ -15,8 +15,8 @@ func perftDriver(depth int) {
 	}
 
 	// generate moves
-	moveList = []uint64{}
-	generateAllMoves()
+	var moveList []uint64
+	moveList = generateAllMoves(moveList)
 
 	// store original position
 	var state gameState
@@ -60,8 +60,8 @@ func perftDriver(depth int) {
 
 func perftTest(depth int) {
 	fmt.Printf("\n    Performance test\n")
-	moveList = []uint64{}
-	generateAllMoves()
+	var moveList []uint64
+	moveList = generateAllMoves(moveList)
 	startTime := time.Now()
 
 	// store original position
