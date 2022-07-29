@@ -119,6 +119,7 @@ func negaMax(alpha int, beta int, depth int) int {
 	// init vars
 	var score int
 	var moveList []uint64
+	var legalMoves int
 	moveList = generateAllMoves(moveList)
 
 	// loop through moves and evaluate
@@ -133,22 +134,21 @@ func negaMax(alpha int, beta int, depth int) int {
 			continue
 		}
 
-		// debug
-		//if depth == 1 {
-		//	printBoard()
-		//}
+		// increment legal moves counter
+		legalMoves++
 
 		// recursive func call
 		score = -negaMax(-beta, -alpha, depth-1)
 
-		// debug
-		//fmt.Printf("score: %d move: ", score)
-		//printMove(moveList[count])
-		//fmt.Println()
-
 		// restore board and decrement half move counter
 		restoreBoardFromCopy(currentState)
 		ply--
+
+		// fail-hard beta cutoff
+		if score >= beta {
+			// node (move) fails high
+			return beta
+		}
 
 		// update score and associate with best move
 		if score > alpha {
@@ -159,6 +159,25 @@ func negaMax(alpha int, beta int, depth int) int {
 			if ply == 0 {
 				bestMove = moveList[count]
 			}
+		}
+	}
+
+	// we don't have any legal moves to make in the current postion
+	if legalMoves == 0 {
+		// see if opponent is in check
+		currentKingBitboard := bitboards[k]
+		if side == white {
+			currentKingBitboard = bitboards[K]
+		}
+		inCheck := isSquareAttacked(getLeastSignificantBitIndex(currentKingBitboard), side)
+
+		// king is in check
+		if inCheck != 0 {
+			// return mating score (assuming closest distance to mating position)
+			return -49000 + ply
+		} else { // king not in check
+			// return stalemate score
+			return 0
 		}
 	}
 	return score
