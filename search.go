@@ -1,7 +1,5 @@
 package main
 
-import "fmt"
-
 // half move counter
 var ply int
 
@@ -184,13 +182,14 @@ func negaMax(alpha int, beta int, depth int) int {
 }
 
 // search position for the best move
-func searchPosition(depth int) {
+func searchPosition(depth int) uint64 {
 	negaMax(-50000, 50000, depth)
 
-	// best move placeholder
-	fmt.Printf("best move: ")
-	if bestMove != 0 {
-		printMove(bestMove)
-	}
-	fmt.Printf("\n")
+	// best move debug
+	//fmt.Printf("best move: ")
+	//if bestMove != 0 {
+	//	printMove(bestMove)
+	//}
+	//fmt.Printf("\n")
+	return bestMove
 }

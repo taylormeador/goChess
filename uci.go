@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -101,19 +102,24 @@ func parsePosition(command string) {
    go depth 64
 */
 // parse UCI "go" command
-func parseGo(command string) string {
+func parseGo(command string) uint64 {
 	words := strings.Fields(command)
 	depth := words[2]
-	return depth
+	intDepth, err := strconv.Atoi(depth)
+	if err == nil {
+		searchPosition(intDepth)
+	} else {
+		fmt.Printf("error: %s", err)
+	}
+	return bestMove
 }
 
 func uciLoop() {
 	for {
-		fmt.Print("enter command: ")
+		fmt.Print("\nenter command: ")
 		input := bufio.NewScanner(os.Stdin)
 		input.Scan()
 		command := strings.Fields(input.Text())[0]
-		fmt.Printf("command: %s\n", command)
 
 		// parse UCI "isready" command
 		if command == "isready" {
@@ -124,7 +130,9 @@ func uciLoop() {
 		} else if command == "ucinewgame" {
 			parsePosition("position startpos")
 		} else if command == "go" {
-			parseGo(input.Text())
+			bestMove = parseGo(input.Text())
+			printMove(bestMove)
+
 		} else if command == "quit" {
 			break
 		} else if command == "uci" {
