@@ -11,5 +11,5 @@ func initAll() {
 func main() {
 	initAll()
 	parseFEN(startPosition)
-	searchPosition(3)
+	searchPosition(1)
 }

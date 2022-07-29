@@ -519,11 +519,13 @@ var bishopMagicNumbers = [64]uint64{
 
 // FEN debug strings
 const (
-	emptyBoard     = "8/8/8/8/8/8/8/8 w - - 0 1"
-	startPosition  = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-	trickyPosition = "r3k2r/pPppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"
-	killerPosition = "rnbqkb1r/pp1p1pPp/8/2p1pP2/1P1P4/3P3P/P1P1P3/RNBQKBNR w KQkq e6 0 1"
-	cmkPosition    = "r2q1rk1/ppp2ppp/2n1bn2/2b1p3/3pP3/3P1NPP/PPP1NPB1/R1BQ1RK1 b - - 0 9"
+	emptyBoard        = "8/8/8/8/8/8/8/8 w - - 0 1"
+	startPosition     = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+	trickyPosition    = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"
+	killerPosition    = "rnbqkb1r/pp1p1pPp/8/2p1pP2/1P1P4/3P3P/P1P1P3/RNBQKBNR w KQkq e6 0 1"
+	cmkPosition       = "r2q1rk1/ppp2ppp/2n1bn2/2b1p3/3pP3/3P1NPP/PPP1NPB1/R1BQ1RK1 b - - 0 9"
+	checkmatePosition = "rnbqkbnr/ppppp2p/5p2/8/8/4P3/PPPP1PPP/RNBQKBNR w KQkq - 0 1"
+	stalematePosition = "4k3/R7/8/8/8/8/8/3R1R1K b - - 0 1"
 )
 
 /*
